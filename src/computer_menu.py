@@ -144,7 +144,15 @@ def run_computer_interface(screen, sound_manager=None):
             cur_name = CAM_ORDER[new]
             trans_active, trans_dir, trans_alpha, trans_pixels, pixel_timer = True, 1, 0, True, 5
             cur_image = new_img
-
+    def exit_camera_mode():
+        nonlocal trans_active, trans_dir, trans_alpha, trans_pixels, pixel_timer, exiting_camera, cam_mode
+        if cam_mode and not trans_active and not exiting_camera:
+            trans_active = True
+            trans_dir = 1
+            trans_alpha = 0
+            trans_pixels = True
+            pixel_timer = 5
+            exiting_camera = True
     while True:
         mouse_click = False
         for e in pygame.event.get():
@@ -186,12 +194,11 @@ def run_computer_interface(screen, sound_manager=None):
                                 trans_pixels = False
                     return_to_game = True
                 if e.key == pygame.K_e and cam_mode and not trans_active and not exiting_camera:
-                    trans_active = True
-                    trans_dir = 1
-                    trans_alpha = 0
-                    trans_pixels = True
-                    pixel_timer = 5
-                    exiting_camera = True
+                    pass
+                if e.key == pygame.K_ESCAPE:
+                    # Выход из камеры, если мы внутри
+                    if cam_mode and not trans_active and not exiting_camera:
+                        exit_camera_mode()
                 if cam_mode:
                     if e.key == pygame.K_d:
                         switch_camera(1)
